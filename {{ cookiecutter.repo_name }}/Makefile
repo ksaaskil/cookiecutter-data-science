@@ -9,6 +9,16 @@ PROJECT_NAME = {{ cookiecutter.repo_name }}
 PYTHON_INTERPRETER = {{ cookiecutter.python_interpreter }}
 VENV_NAME := {{ cookiecutter.venv_name }}
 
+ifeq (,$(shell which pyenv))
+HAS_VIRTUALENV=False
+else
+ifeq (,$(shell which virtualenv))
+HAS_VIRTUALENV=False
+else
+HAS_VIRTUALENV=True
+endif
+endif
+
 #################################################################################
 # COMMANDS                                                                      #
 #################################################################################
@@ -25,13 +35,17 @@ download: requirements
 	# $(PYTHON_INTERPRETER) src/data/make_dataset.py
 
 virtualenv:
+ifeq (True, $(HAS_VIRTUALENV))
 ifeq (,$(shell pyenv virtualenvs | grep $(VENV_NAME))
 	@echo "Did not find existing virtualenv $(VENV_NAME), creating..."
 	pyenv virtualenv 3.6.2 {{ cookiecutter.venv_name }}
 	pyenv local {{ cookiecutter.venv_name }}
 else
 	@echo "Found existing virtualenv with name $(VENV_NAME), skipping creation."
-end
+endif
+else
+	@echo "No pyenv-virtualenv found, skipping creating virtualenv."
+endif
 
 preprocess:
 	echo "Preprocessing..."

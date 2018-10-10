@@ -14,7 +14,7 @@ PYTHON_INTERPRETER = {{ cookiecutter.python_interpreter }}
 
 ## Install Python Dependencies
 requirements: test_environment
-	pip install -U pip setuptools wheel
+	# pip install -U pip setuptools wheel
 	pip install -r requirements.txt
 
 ## Make Dataset

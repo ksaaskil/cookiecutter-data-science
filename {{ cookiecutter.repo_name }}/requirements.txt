@@ -1,5 +1,7 @@
 # local package
--e .
+# -e .
+
+kaggle
 
 # external requirements
 click

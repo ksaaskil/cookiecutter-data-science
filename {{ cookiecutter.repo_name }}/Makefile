@@ -7,13 +7,14 @@ all: download preprocess train submit
 PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 PROJECT_NAME = {{ cookiecutter.repo_name }}
 PYTHON_INTERPRETER = {{ cookiecutter.python_interpreter }}
+VENV_NAME := {{ cookiecutter.venv_name }}
 
 #################################################################################
 # COMMANDS                                                                      #
 #################################################################################
 
 ## Install Python Dependencies
-requirements: test_environment
+requirements: virtualenv
 	# pip install -U pip setuptools wheel
 	pip install -r requirements.txt
 
@@ -22,6 +23,15 @@ download: requirements
 	kaggle competitions download -c {{ cookiecutter.kaggle_competition }}
 	# TODO Real downloads
 	# $(PYTHON_INTERPRETER) src/data/make_dataset.py
+
+virtualenv:
+ifeq (,$(shell pyenv virtualenvs | grep $(VENV_NAME))
+	@echo "Did not find existing virtualenv $(VENV_NAME), creating..."
+	pyenv virtualenv 3.6.2 {{ cookiecutter.venv_name }}
+	pyenv local {{ cookiecutter.venv_name }}
+else
+	@echo "Found existing virtualenv with name $(VENV_NAME), skipping creation."
+end
 
 preprocess:
 	echo "Preprocessing..."
@@ -42,8 +52,9 @@ lint:
 	flake8 src
 
 ## Test python environment is setup correctly
-test_environment:
+test_environment: virtualenv
 	$(PYTHON_INTERPRETER) test_environment.py
+
 
 #################################################################################
 # PROJECT RULES                                                                 #
